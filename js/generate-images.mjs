@@ -5,6 +5,11 @@ import {
 } from './utils/generate-utils.mjs';
 import { createPDF } from './utils/helpers.mjs';
 
+// GLOBAL-VARIABLES
+const AMPLITUDE = 2;
+const SPACING = 4;
+const MARGIN = 30;
+
 const pageEl = document.querySelector('.page-a');
 let outputImages = [];
 const paperContent = document.querySelector('.paper-content');
@@ -23,7 +28,7 @@ async function convertDIVToImage() {
 
     /** Function html2canvas comes from a library html2canvas which is included in the index.html */
 
-    const tmp = paperContent.innerHTML.split("</div>");
+    const tmp = paperContent.innerHTML.split("/");
     const lines = [];
     tmp.forEach((val, ind) => {
         val.split("<div>").forEach((extraVal, i) => {
@@ -31,11 +36,15 @@ async function convertDIVToImage() {
         })
     })
     console.log(paperContent.innerHTML)
-    innerView.removeChild(paperContent)
+    try {
+        innerView.removeChild(paperContent)
+    } catch (error) {
+             
+    }
     let el = document.createElement("div");
     el.id = "innerDiv"
+    pageEl.marginTop = "50px"
     innerView.appendChild(el);
-    const edited = [];
     lines.forEach((value, index) => {
         let innerDiv = document.getElementById("innerDiv");
         let child = document.createElement("div")
@@ -43,9 +52,8 @@ async function convertDIVToImage() {
         innerDiv.width = "100%"
         child.height = "25px"
         child.style.overflow = "hidden"
-        innerDiv.height = "100%"
         let chars = value.replace("<div>", "").replace("<br>", "").split("");
-        let amplitude = (Math.random() * 10) - 5
+        let amplitude = (Math.random() * AMPLITUDE)
         chars.forEach((val, ind) => {
             if (val == " " && chars[ind + 1] == " ") {
                 return
@@ -57,21 +65,18 @@ async function convertDIVToImage() {
             charDiv.style.height = "25px";
             charDiv.style.fontFamily = 'f' + Math.floor(Math.random() * 3);
             if (val != " ") {
-                charDiv.style.width = ((Math.random() * 4) + 5) + "px"
+                charDiv.style.width = 5 + "px"
             } else {
-                charDiv.style.width = ((Math.random() * 4) + 8) + "px"
+                charDiv.style.width = ((Math.random() * SPACING) + 8) + "px"
             }
             charDiv.style.marginTop = (Math.sin(((index + ind) / (chars.length + lines.length) * Math.PI * 2) - (Math.PI / 2)) * amplitude) + "px"
             child.appendChild(charDiv);
         })
-        child.style.padding = "0px 0px 0px " + ((Math.random() * 30) + 25) + "px"
-        child.style.marginTop = "-4px"
+        child.style.padding = "0px 0px 0px " + ((Math.random() * MARGIN) + 25) + "px"
+        child.style.marginTop = "-11.5px"
         innerDiv.appendChild(child)
 
     });
-    console.log(edited)
-    paperContent.innerHTML = edited.join("\n");
-    console.log(paperContent)
 
     console.log(pageEl);
     const canvas = await html2canvas(pageEl, options);
